@@ -96,8 +96,12 @@ def sign_image(image, key):
 	signatory = DSS.new(key, 'fips-186-3')
 	image[0x04:0x44] = signatory.sign(sha)
 
+	# Unpack after signing
+	stm32 = unpack_header(image)
 	verify_signature(image, key)
 
+	LOG.debug('Public Key: %s', get_raw_pubkey(key).hex())
+	LOG.debug('Hash: %s', sha.hexdigest())
 	LOG.debug('Signature: %s', stm32['signature'].hex())
 	return 0
 
